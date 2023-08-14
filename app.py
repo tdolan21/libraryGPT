@@ -3,14 +3,17 @@ from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings   import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain.vectorstores import FAISS, Qdrant
 from langchain.embeddings   import HuggingFaceInstructEmbeddings
 import torch
 import os
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, RetrievalQA
 from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
 from htmlTemplate import css, user_template, bot_template
+import qdrant_client
+from qdrant_client import QdrantClient
 # Set PYTORCH_CUDA_ALLOC_CONF environment variable
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
@@ -18,6 +21,14 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 torch.cuda.memory_allocated()
 torch.cuda.memory_reserved()
 torch.cuda.empty_cache()
+
+os.environ['QDRANT_API_KEY'] = ""
+os.environ['QDRANT_HOST'] = ""
+
+
+
+os.environ['QDRANT_COLLECTION_NAME'] = "docs"
+
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -37,10 +48,23 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-def get_vectorstore(text_chunks):
+def get_vectorstore():
+    
+    client = QdrantClient(
+
+    url = "",
+    api_key="",
+
+)
+    
     embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+
+    vectorstore = Qdrant(
+        client=client, 
+        collection_name=os.getenv("QDRANT_COLLECTION_NAME"), 
+        embeddings=embeddings,
+    )
+    
     return vectorstore
 
 def get_conversation_chain(vectorstore):
@@ -52,6 +76,8 @@ def get_conversation_chain(vectorstore):
         memory=memory,
     )
     return conversation_chain
+
+    
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({"question": user_question})
@@ -75,6 +101,10 @@ def main():
         st.session_state.chat_history = None
 
     st.header("Chat with LibraryGPT :books: [WIP] :construction:")
+
+    
+    
+
     user_question = st.text_input("Ask a question about your documentation: ")
     
     if user_question:
@@ -90,8 +120,20 @@ def main():
                 # Get Text from PDF
                 text_chunks = get_text_chunks(raw_text)
                 # Create VectorStore
-                vectorstore = get_vectorstore(text_chunks)
+                vectorstore = get_vectorstore()
                 
+
+                vectorstore.add_texts(text_chunks)
+
+                print(vectorstore)
+                qa = RetrievalQA.from_chain_type(
+                    llm=OpenAI(),
+                    chain_type="stuff",
+                    retriever=vectorstore.as_retriever()
+                    )
+
+                answer = qa.run(user_question)
+                st.write(answer)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
 
     st.session_state.conversation

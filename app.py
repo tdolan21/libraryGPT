@@ -22,8 +22,8 @@ torch.cuda.memory_allocated()
 torch.cuda.memory_reserved()
 torch.cuda.empty_cache()
 
-os.environ['QDRANT_API_KEY'] = ""
-os.environ['QDRANT_HOST'] = ""
+os.environ['QDRANT_API_KEY'] = "2xo8Rv_s34S7QFoWQG1Pv8kO0pZ7rmUezruKBCkYuvPzbd45QHXZdg"
+os.environ['QDRANT_HOST'] = "https://c3c82a88-32b7-4073-930b-5e2a3c9f02ad.us-east-1-0.aws.cloud.qdrant.io:6333"
 
 
 
@@ -52,8 +52,8 @@ def get_vectorstore():
     
     client = QdrantClient(
 
-    url = "",
-    api_key="",
+    url = "https://c3c82a88-32b7-4073-930b-5e2a3c9f02ad.us-east-1-0.aws.cloud.qdrant.io:6333",
+    api_key="2xo8Rv_s34S7QFoWQG1Pv8kO0pZ7rmUezruKBCkYuvPzbd45QHXZdg",
 
 )
     

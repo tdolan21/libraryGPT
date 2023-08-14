@@ -32,7 +32,7 @@ This will allow torch to access the GPU and block the CPU. Setting this value to
 
 - **PDF Reading**: Extracts text from uploaded PDF files.
 - **Text Chunking**: Splits text into chunks for efficient processing.
-- **Vector Storage**: Utilizes FAISS for vector storage and retrieval.
+- **Vector Storage**: 
 - **Conversational Chains**: Implements a retrieval chain to handle user questions.
 
 ## Libraries and Components
@@ -42,7 +42,7 @@ This will allow torch to access the GPU and block the CPU. Setting this value to
 - **PyPDF2**: For PDF reading.
 - **langchain**: Contains several modules for text processing, embeddings, vector storage, and conversation handling.
 - **Torch**: For handling GPU memory and other CUDA-related tasks.
-- **htmlTemplate**: Contains templates for custom HTML styling.
+- **Qdrant**: Vector database for persistent memory when loading documentation
 
 ## How It Works
 
@@ -50,7 +50,7 @@ This will allow torch to access the GPU and block the CPU. Setting this value to
 2. **User Input Handling**: Accepts user questions and handles responses.
 3. **PDF Processing**: Allows users to upload PDFs and extracts text.
 4. **Text Chunking**: The extracted text is split into chunks using `CharacterTextSplitter`.
-5. **Vector Store Creation**: The text chunks are embedded using `OpenAIEmbeddings` or `HuggingFaceInstructEmbeddings`, and a vector store is created using FAISS.
+5. **Vector Store Creation**: The text chunks are embedded using `OpenAIEmbeddings` or `HuggingFaceInstructEmbeddings`, and a vector store is created using Qdrant Vector Database.
 6. **Conversation Chain Setup**: A conversational chain is set up using `ConversationalRetrievalChain` and the vector store.
 7. **Chat Handling**: Processes user input and provides responses via the chat interface.
 
@@ -60,6 +60,9 @@ This will allow torch to access the GPU and block the CPU. Setting this value to
 git clone https://github.com/tdolan21/libraryGPT
 cd libraryGPT
 pip install -r requirements.txt
+cp .env.example
+mv .env.example .env
+
 ```
 Once you have the requirements installed, you can run the command 
 ``` bash
